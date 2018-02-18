@@ -37,3 +37,26 @@ interface(`prometheusd_exec',`
 	corecmd_search_bin($1)
 	can_exec($1, prometheusd_exec_t)
 ')
+
+#######################################
+## <summary>
+##	Read prometheus time series database.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`prometheusd_read_db',`
+	gen_require(`
+		type prometheus_db_t;
+	')
+
+	files_search_usr($1)	
+	read_files_pattern($1, prometheusd_db_t, prometheusd_db_t)
+
+')
+
+
+
