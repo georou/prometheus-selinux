@@ -1,0 +1,7 @@
+/etc/prometheus(/.*)?					gen_context(system_u:object_r:prometheusd_conf_t,s0)
+
+/etc/systemd/system/prometheus.*		--      gen_context(system_u:object_r:prometheusd_unit_t,s0)
+/usr/lib/systemd/system/prometheus.*		--     	gen_context(system_u:object_r:prometheusd_unit_t,s0)
+
+/opt/prometheus/data(/.*)?				gen_context(system_u:object_r:prometheusd_db_t,s0)
+/opt/prometheus/prometheus			--	gen_context(system_u:object_r:prometheusd_exec_t,s0)

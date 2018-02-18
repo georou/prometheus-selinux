@@ -1,0 +1,39 @@
+## <summary>policy for prometheusd</summary>
+
+########################################
+## <summary>
+##	Execute prometheusd_exec_t in the prometheusd domain.
+## </summary>
+## <param name="domain">
+## <summary>
+##	Domain allowed to transition.
+## </summary>
+## </param>
+#
+interface(`prometheusd_domtrans',`
+	gen_require(`
+		type prometheusd_t, prometheusd_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	domtrans_pattern($1, prometheusd_exec_t, prometheusd_t)
+')
+
+######################################
+## <summary>
+##	Execute prometheusd in the caller domain.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`prometheusd_exec',`
+	gen_require(`
+		type prometheusd_exec_t;
+	')
+
+	corecmd_search_bin($1)
+	can_exec($1, prometheusd_exec_t)
+')

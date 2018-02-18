@@ -1,0 +1,11 @@
+[Unit]
+Description=Prometheus Monitoring service
+After=network.target auditd.service
+
+[Service]
+User=prometheus
+Group=prometheus
+ExecStart=/opt/prometheus/prometheus --config.file /etc/prometheus/prometheus.yml --storage.tsdb.path /opt/prometheus/data
+
+[Install]
+WantedBy=default.target

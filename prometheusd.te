@@ -1,0 +1,49 @@
+policy_module(prometheusd, 1.0.0)
+
+########################################
+#
+# Declarations
+#
+#permissive prometheusd_t;
+
+type prometheusd_t;
+type prometheusd_exec_t;
+init_daemon_domain(prometheusd_t, prometheusd_exec_t)
+
+type prometheusd_conf_t;
+files_config_file(prometheusd_conf_t)
+
+type prometheusd_db_t;
+files_type(prometheusd_db_t)
+
+type prometheusd_unit_t;
+systemd_unit_file(prometheusd_unit_t)
+
+type prometheusd_port_t;
+corenet_port(prometheusd_port_t)
+
+########################################
+#
+# prometheusd local policy
+#
+allow prometheusd_t self:tcp_socket create_stream_socket_perms;
+allow prometheusd_t self:udp_socket create_stream_socket_perms;
+
+allow prometheusd_t prometheusd_port_t:tcp_socket name_bind;
+
+manage_dirs_pattern(prometheusd_t, prometheusd_conf_t, prometheusd_conf_t)
+manage_files_pattern(prometheusd_t, prometheusd_conf_t, prometheusd_conf_t)
+
+manage_dirs_pattern(prometheusd_t, prometheusd_db_t, prometheusd_db_t)
+manage_files_pattern(prometheusd_t, prometheusd_db_t, prometheusd_db_t)
+files_usr_filetrans(prometheusd_t, prometheusd_db_t, dir, "data")
+
+kernel_read_net_sysctls(prometheusd_t)
+kernel_read_system_state(prometheusd_t)
+
+corenet_tcp_bind_generic_node(prometheusd_t)
+corenet_tcp_bind_websm_port(prometheusd_t)
+corenet_tcp_connect_hplip_port(prometheusd_t)
+corenet_tcp_connect_websm_port(prometheusd_t)
+
+sysnet_read_config(prometheusd_t)
