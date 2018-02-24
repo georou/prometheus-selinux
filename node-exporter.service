@@ -5,7 +5,7 @@ After=network.target prometheus.service
 [Service]
 User=prometheus
 Group=prometheus
-ExecStart=/usr/local/bin/node_exporter --no-collector.infiniband --no-collector.zfs --no-collector.wifi --no-collector.mdadm
+ExecStart=/usr/local/bin/node_exporter
 Restart=on-failure
 
 [Install]
