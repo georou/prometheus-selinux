@@ -36,10 +36,6 @@ template(`prometheusd_exporter_template',`
 ## </param>
 #
 template(`prometheusd_module_template',`
-#        gen_require(`
-#                attribute prometheusd_domain;
-#                type prometheusd_t;
-#        ')
 
         type $1_prometheusd_t;
         type $1_prometheusd_exec_t;

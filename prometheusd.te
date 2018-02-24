@@ -6,7 +6,7 @@ policy_module(prometheusd, 1.0.0)
 #
 #permissive prometheusd_t;
 
-attribute prometheusd_exporter_domain;
+#attribute prometheusd_exporter_domain;
 #attribute prometheusd_domain;
 
 type prometheusd_t;
@@ -29,12 +29,14 @@ corenet_port(prometheusd_port_t)
 prometheusd_exporter_template(node)
 prometheusd_module_template(alertmanager)
 
+# node_exporter
 type node_prometheusd_exporter_unit_t;
 systemd_unit_file(node_prometheusd_exporter_unit_t)
 
 type node_prometheusd_exporter_port_t;
 corenet_port(node_prometheusd_exporter_port_t)
 
+# alertmanager
 type alertmanager_prometheusd_unit_t;
 systemd_unit_file(alertmanager_prometheusd_unit_t)
 
@@ -87,12 +89,13 @@ kernel_read_net_sysctls(node_prometheusd_exporter_t)
 kernel_read_network_state(node_prometheusd_exporter_t)
 kernel_read_software_raid_state(node_prometheusd_exporter_t)
 kernel_read_system_state(node_prometheusd_exporter_t)
+kernel_request_load_module(node_prometheusd_exporter_t) # Loads module net-pf-16-proto-16-family-nl80211. Probably used with --collector=wifi
 
 corenet_tcp_bind_generic_node(node_prometheusd_exporter_t)
 corenet_tcp_bind_hplip_port(node_prometheusd_exporter_t)
 # Used for supervisor and gmond. Uncomment if you need to use them
 #corenet_tcp_connect_tor_port(node_prometheusd_exporter_t)		# 9001/tcp node_exporter --collector=supervisord
-#corenet_tcp_connect_unreserved_ports(node_prometheusd_exporter_t)	# 8649/tcp node_exporter --collector=gmond
+#corenet_tcp_connect_unreserved_ports(node_prometheusd_exporter_t)	# 8649/tcp node_exporter --collector=gmond MARKED AS DEPRECATED !!
 
 dbus_send_system_bus(node_prometheusd_exporter_t)
 dbus_system_bus_client(node_prometheusd_exporter_t)

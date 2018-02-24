@@ -2,6 +2,12 @@
 
 **This policy is designed to be a base to build upon.** 
 
+The main focus of this policy is:
+* To be run without docker
+* node_exporter
+* alertmanager
+* extensible to other exporters 
+
 The current policy allows you to setup a Prometheus server and scrape targets with node_exporter and recieve alerts with alertmanager. Other exporters will be added as I find a need to use them. I am happy for pull requests to add features if you've already done them. For a front end, grafana is recommended and I have a policy created for that too: https://github.com/georou/grafana-selinux
 
 In an effort to make the policy handle all the different types of exporters more cleanly, I have created a template interface to use that will setup the basic framework for each exporter:
