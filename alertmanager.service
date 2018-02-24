@@ -1,0 +1,12 @@
+[Unit]
+Description=Prometheus alertmanager
+After=network.target prometheus.service
+
+[Service]
+User=alertmanager
+Group=alertmanager
+ExecStart=/usr/local/bin/alertmanager --config.file /etc/alertmanager/alertmanager.yml --storage.path /opt/alertmanager/data
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

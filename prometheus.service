@@ -5,7 +5,8 @@ After=network.target auditd.service
 [Service]
 User=prometheus
 Group=prometheus
-ExecStart=/opt/prometheus/prometheus --config.file /etc/prometheus/prometheus.yml --storage.tsdb.path /opt/prometheus/data
+ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --storage.tsdb.path /opt/prometheus/data
+Restart=on-failure
 
 [Install]
 WantedBy=default.target

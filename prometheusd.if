@@ -2,6 +2,60 @@
 
 ########################################
 ## <summary>
+##	Create a set of derived types for various
+##	prometheus exporters,
+## </summary>
+## <param name="prefix">
+##	<summary>
+##	The name to be used for deriving type names.
+##	</summary>
+## </param>
+#
+template(`prometheusd_exporter_template',`
+#	gen_require(`
+#		attribute prometheusd_exporter_domain;
+#		type prometheusd_t;
+#	')
+
+	type $1_prometheusd_exporter_t;
+	type $1_prometheusd_exporter_exec_t;
+	init_daemon_domain($1_prometheusd_exporter_t, $1_prometheusd_exporter_exec_t)
+	role system_r types $1_prometheusd_exporter_t;
+
+')
+
+########################################
+## <summary>
+##      Create a set of derived types for various
+##      prometheus modules,
+## </summary>
+## <param name="prefix">
+##      <summary>
+##      The name to be used for deriving type names.
+##      </summary>
+## </param>
+#
+template(`prometheusd_module_template',`
+#        gen_require(`
+#                attribute prometheusd_domain;
+#                type prometheusd_t;
+#        ')
+
+        type $1_prometheusd_t;
+        type $1_prometheusd_exec_t;
+        init_daemon_domain($1_prometheusd_t, $1_prometheusd_exec_t)
+        role system_r types $1_prometheusd_t;
+
+	type $1_prometheusd_conf_t;
+	files_config_file($1_prometheusd_conf_t)
+	
+	type $1_prometheusd_data_t;
+	files_type($1_prometheusd_data_t)
+
+')
+
+########################################
+## <summary>
 ##	Execute prometheusd_exec_t in the prometheusd domain.
 ## </summary>
 ## <param name="domain">
@@ -57,6 +111,4 @@ interface(`prometheusd_read_db',`
 	read_files_pattern($1, prometheusd_db_t, prometheusd_db_t)
 
 ')
-
-
 

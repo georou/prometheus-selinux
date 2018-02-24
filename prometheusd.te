@@ -6,9 +6,13 @@ policy_module(prometheusd, 1.0.0)
 #
 #permissive prometheusd_t;
 
+attribute prometheusd_exporter_domain;
+#attribute prometheusd_domain;
+
 type prometheusd_t;
 type prometheusd_exec_t;
 init_daemon_domain(prometheusd_t, prometheusd_exec_t)
+role system_r types prometheusd_t;
 
 type prometheusd_conf_t;
 files_config_file(prometheusd_conf_t)
@@ -22,12 +26,31 @@ systemd_unit_file(prometheusd_unit_t)
 type prometheusd_port_t;
 corenet_port(prometheusd_port_t)
 
+prometheusd_exporter_template(node)
+prometheusd_module_template(alertmanager)
+
+type node_prometheusd_exporter_unit_t;
+systemd_unit_file(node_prometheusd_exporter_unit_t)
+
+type node_prometheusd_exporter_port_t;
+corenet_port(node_prometheusd_exporter_port_t)
+
+type alertmanager_prometheusd_unit_t;
+systemd_unit_file(alertmanager_prometheusd_unit_t)
+
+type alertmanager_prometheusd_port_t;
+corenet_port(alertmanager_prometheusd_port_t)
+
+
 ########################################
 #
 # prometheusd local policy
 #
 allow prometheusd_t self:tcp_socket create_stream_socket_perms;
 allow prometheusd_t self:udp_socket create_stream_socket_perms;
+
+allow prometheusd_t alertmanager_prometheusd_port_t:tcp_socket name_connect;
+allow prometheusd_t node_prometheusd_exporter_port_t:tcp_socket name_connect;
 
 allow prometheusd_t prometheusd_port_t:tcp_socket name_bind;
 
@@ -47,3 +70,71 @@ corenet_tcp_connect_hplip_port(prometheusd_t)
 corenet_tcp_connect_websm_port(prometheusd_t)
 
 sysnet_read_config(prometheusd_t)
+
+
+###################################
+#
+# node exporter local policy
+#
+allow node_prometheusd_exporter_t self:tcp_socket create_stream_socket_perms;
+allow node_prometheusd_exporter_t self:udp_socket create_stream_socket_perms;
+
+allow node_prometheusd_exporter_t self:netlink_route_socket create_netlink_socket_perms;
+allow node_prometheusd_exporter_t self:netlink_socket create_socket_perms;
+
+kernel_read_fs_sysctls(node_prometheusd_exporter_t)
+kernel_read_net_sysctls(node_prometheusd_exporter_t)
+kernel_read_network_state(node_prometheusd_exporter_t)
+kernel_read_software_raid_state(node_prometheusd_exporter_t)
+kernel_read_system_state(node_prometheusd_exporter_t)
+
+corenet_tcp_bind_generic_node(node_prometheusd_exporter_t)
+corenet_tcp_bind_hplip_port(node_prometheusd_exporter_t)
+# Used for supervisor and gmond. Uncomment if you need to use them
+#corenet_tcp_connect_tor_port(node_prometheusd_exporter_t)		# 9001/tcp node_exporter --collector=supervisord
+#corenet_tcp_connect_unreserved_ports(node_prometheusd_exporter_t)	# 8649/tcp node_exporter --collector=gmond
+
+dbus_send_system_bus(node_prometheusd_exporter_t)
+dbus_system_bus_client(node_prometheusd_exporter_t)
+
+dev_read_sysfs(node_prometheusd_exporter_t)
+
+fs_getattr_tmpfs(node_prometheusd_exporter_t)
+fs_getattr_xattr_fs(node_prometheusd_exporter_t)
+
+init_dbus_chat(node_prometheusd_exporter_t)
+init_status(node_prometheusd_exporter_t)
+
+userdom_search_user_tmp_dirs(node_prometheusd_exporter_t)
+
+systemd_dbus_chat_logind(node_prometheusd_exporter_t)
+
+sysnet_read_config(node_prometheusd_exporter_t)
+
+###################################
+#
+# alertmanager local policy
+#
+allow alertmanager_prometheusd_t self:tcp_socket create_stream_socket_perms;
+allow alertmanager_prometheusd_t self:udp_socket create_stream_socket_perms;
+allow alertmanager_prometheusd_t self:netlink_route_socket create_netlink_socket_perms;
+
+allow alertmanager_prometheusd_t alertmanager_prometheusd_port_t:tcp_socket name_bind;
+
+manage_dirs_pattern(alertmanager_prometheusd_t, alertmanager_prometheusd_conf_t, alertmanager_prometheusd_conf_t)
+manage_files_pattern(alertmanager_prometheusd_t, alertmanager_prometheusd_conf_t, alertmanager_prometheusd_conf_t)
+
+manage_dirs_pattern(alertmanager_prometheusd_t, alertmanager_prometheusd_data_t, alertmanager_prometheusd_data_t)
+manage_files_pattern(alertmanager_prometheusd_t, alertmanager_prometheusd_data_t, alertmanager_prometheusd_data_t)
+
+kernel_read_net_sysctls(alertmanager_prometheusd_t)
+kernel_read_system_state(alertmanager_prometheusd_t)
+kernel_search_network_sysctl(alertmanager_prometheusd_t)
+
+corenet_tcp_bind_cyphesis_port(alertmanager_prometheusd_t)
+corenet_tcp_bind_generic_node(alertmanager_prometheusd_t)
+corenet_tcp_connect_smtp_port(alertmanager_prometheusd_t)
+
+sysnet_read_config(alertmanager_prometheusd_t)
+
+miscfiles_read_generic_certs(alertmanager_prometheusd_t)

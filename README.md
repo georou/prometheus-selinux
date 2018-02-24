@@ -1,10 +1,31 @@
 # prometheus-selinux
 
-**This policy is designed to be a base to build upon.** There are a lot of different configuration options for Prometheus and so I can't cover every aspect. 
+**This policy is designed to be a base to build upon.** 
 
-The current policy allows you to setup a Prometheus server and scrape targets. Anything extra and you will need to add them into your policy. I am happy for pull requests to add features if you've already done them.
+The current policy allows you to setup a Prometheus server and scrape targets with node_exporter and recieve alerts with alertmanager. Other exporters will be added as I find a need to use them. I am happy for pull requests to add features if you've already done them. For a front end, grafana is recommended and I have a policy created for that too: https://github.com/georou/grafana-selinux
 
-Also to note, this policy uses /opt and /opt/prometheus/data as locations for its files and TSDB.
+In an effort to make the policy handle all the different types of exporters more cleanly, I have created a template interface to use that will setup the basic framework for each exporter:
+promethuesd_t, $1_prometheusd_exporter_t for exporters and $1_prometheusd_t for alertmanager (future pushgateway will be added).
+
+How-to add exporters:
+* Name and create the interface template in the .te file. Eg: prometheus_exporter_template(namehere) This will create relevent labels from the .if file. If you need to create more for your exporter, you need to declare them in the .te file.
+* Create a local policy section (use node_exporter's as an example) for the new exporter in the .te file and add permissions as needed.
+
+*Included are service files that indicate where you will be storing logs and data by default. Remember to label your directory if you don't choose these defaults.*
+
+
+## node_exporter Information
+If you don't use the default port of 9100/tcp, you will need to label it with: node_prometheusd_exporter_port_t
+
+The following collectors for node_exporter are untested and partially implemented(see commented code in .te):
+* --collector.gmond --collector.megacli --collector.runit --collector.supervisord
+
+No doubt more permissions could be needed for the exisiting collectors that work, please keep an eye out for AVC denails.
+
+## Alertmanager Information
+If you don't use the default port of 9093/tcp, you will need to label it with: alertmanager_prometheusd_port_t
+
+The default mesh address does work but the actual mesh functionality is currently untested. 
 
 ## Installation
 ```sh
@@ -16,12 +37,13 @@ git clone https://github.com/georou/prometheus-selinux.git
 # Install the SELinux policy module. Compile it before hand to ensure proper compatibility (see below)
 semodule -i prometheusd.pp
 
-# Restore all the correct context labels
-restorecon -RvF /etc/prometheus
-restorecon -RvF /opt/prometheus
+# Restore all the correct context labels after creating the directories and setting owner,group permissions
+restorecon -RvF /etc/{alertmanager,prometheus}
+restorecon -RvF /opt/{alertmanager,prometheus}
+restorecon -RvF /usr/local/bin/{alertmanager,node_exporter,prometheus,promtool}
 
 # Start prometheusd
-systemctl start prometheus-server.service
+systemctl start prometheus.service
 
 # Ensure it's working in the proper confinement
 ps -eZ | grep prometheus
@@ -54,6 +76,8 @@ Ensure policycoreutils-devel is installed and/or run: `sepolgen-ifgen`
 Built on CentOS 7.4 at the time with:
 ```
 selinux-policy-targeted-3.13.1-166.el7_4.7.noarch
+libselinux-2.5-11.el7.x86_64
+libselinux-python-2.5-11.el7.x86_64
 selinux-policy-3.13.1-166.el7_4.7.noarch
 selinux-policy-devel-3.13.1-166.el7_4.7.noarch
 ```
