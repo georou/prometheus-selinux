@@ -1,4 +1,4 @@
-policy_module(prometheusd, 1.0.0)
+policy_module(prometheusd, 1.0.1)
 
 ########################################
 #
@@ -8,6 +8,13 @@ policy_module(prometheusd, 1.0.0)
 
 #attribute prometheusd_exporter_domain;
 #attribute prometheusd_domain;
+
+## <desc>
+## <p>
+## Allow node exporter to use the wifi collector which requires a kernel module to load
+## </p>
+## </desc>
+gen_tunable(node_exporter_can_load_wifi_module, false)
 
 type prometheusd_t;
 type prometheusd_exec_t;
@@ -89,7 +96,6 @@ kernel_read_net_sysctls(node_prometheusd_exporter_t)
 kernel_read_network_state(node_prometheusd_exporter_t)
 kernel_read_software_raid_state(node_prometheusd_exporter_t)
 kernel_read_system_state(node_prometheusd_exporter_t)
-kernel_request_load_module(node_prometheusd_exporter_t) # Loads module net-pf-16-proto-16-family-nl80211. Probably used with --collector=wifi
 
 corenet_tcp_bind_generic_node(node_prometheusd_exporter_t)
 corenet_tcp_bind_hplip_port(node_prometheusd_exporter_t)
@@ -113,6 +119,10 @@ userdom_search_user_tmp_dirs(node_prometheusd_exporter_t)
 systemd_dbus_chat_logind(node_prometheusd_exporter_t)
 
 sysnet_read_config(node_prometheusd_exporter_t)
+
+tunable_policy(`node_exporter_can_load_wifi_module',`
+	kernel_request_load_module(node_prometheusd_exporter_t) # Loads module net-pf-16-proto-16-family-nl80211. Probably used with --collector=wifi
+')
 
 ###################################
 #
