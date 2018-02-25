@@ -61,7 +61,7 @@ allow prometheusd_t self:udp_socket create_stream_socket_perms;
 allow prometheusd_t alertmanager_prometheusd_port_t:tcp_socket name_connect;
 allow prometheusd_t node_prometheusd_exporter_port_t:tcp_socket name_connect;
 
-allow prometheusd_t prometheusd_port_t:tcp_socket name_bind;
+allow prometheusd_t prometheusd_port_t:tcp_socket name_connect;
 
 manage_dirs_pattern(prometheusd_t, prometheusd_conf_t, prometheusd_conf_t)
 manage_files_pattern(prometheusd_t, prometheusd_conf_t, prometheusd_conf_t)

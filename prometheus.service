@@ -1,6 +1,7 @@
 [Unit]
 Description=Prometheus Monitoring service
-After=network.target auditd.service
+After=network.target
+Wants=alertmanager.service
 
 [Service]
 User=prometheus
@@ -9,4 +10,4 @@ ExecStart=/usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml
 Restart=on-failure
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

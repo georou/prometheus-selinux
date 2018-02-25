@@ -1,6 +1,6 @@
 [Unit]
 Description=Prometheus alertmanager
-After=network.target prometheus.service
+After=network.target
 
 [Service]
 User=alertmanager
@@ -9,4 +9,4 @@ ExecStart=/usr/local/bin/alertmanager --config.file /etc/alertmanager/alertmanag
 Restart=on-failure
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target

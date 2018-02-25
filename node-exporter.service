@@ -1,6 +1,6 @@
 [Unit]
 Description=Prometheus node exporter
-After=network.target prometheus.service
+After=network.target
 
 [Service]
 User=prometheus
@@ -9,4 +9,4 @@ ExecStart=/usr/local/bin/node_exporter
 Restart=on-failure
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
