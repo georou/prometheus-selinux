@@ -90,6 +90,25 @@ interface(`prometheusd_exec',`
 
 #######################################
 ## <summary>
+##      Allow domain to connect to alertmananger port. Used for reverse proxy
+## </summary>
+## <param name="domain">
+##      <summary>
+##      Domain allowed access.
+##      </summary>
+## </param>
+#
+interface(`connect_alertmanager_prometheusd_port',`
+	gen_require(`
+		class tcp_socket name_connect;
+		type alertmanager_prometheusd_port_t;
+	')
+
+	allow $1 alertmanager_prometheusd_port_t:tcp_socket name_connect;
+')
+
+#######################################
+## <summary>
 ##	Read prometheus time series database.
 ## </summary>
 ## <param name="domain">
@@ -100,11 +119,30 @@ interface(`prometheusd_exec',`
 #
 interface(`prometheusd_read_db',`
 	gen_require(`
-		type prometheus_db_t;
+		type prometheusd_db_t;
 	')
 
 	files_search_usr($1)	
 	read_files_pattern($1, prometheusd_db_t, prometheusd_db_t)
+')
 
+#######################################
+## <summary>
+##	Manage prometheusd time series database.
+## </summary>
+## <param name="domain">
+##	<summary>
+##	Domain allowed access.
+##	</summary>
+## </param>
+#
+interface(`prometheusd_manage_db',`
+	gen_require(`
+		type prometheusd_db_t;
+	')
+
+	files_search_usr($1)	
+	manage_dirs_pattern($1, prometheusd_db_t, prometheusd_db_t)
+	manage_files_pattern($1, prometheusd_db_t, prometheusd_db_t)
 ')
 
