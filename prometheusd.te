@@ -108,17 +108,20 @@ dbus_system_bus_client(node_prometheusd_exporter_t)
 
 dev_read_sysfs(node_prometheusd_exporter_t)
 
+fs_getattr_rpc_pipefs(node_prometheusd_exporter_t)
 fs_getattr_tmpfs(node_prometheusd_exporter_t)
 fs_getattr_xattr_fs(node_prometheusd_exporter_t)
 
 init_dbus_chat(node_prometheusd_exporter_t)
 init_status(node_prometheusd_exporter_t)
 
-userdom_search_user_tmp_dirs(node_prometheusd_exporter_t)
+rpc_search_nfs_state_data(node_prometheusd_exporter_t)
 
 systemd_dbus_chat_logind(node_prometheusd_exporter_t)
 
 sysnet_read_config(node_prometheusd_exporter_t)
+
+userdom_search_user_tmp_dirs(node_prometheusd_exporter_t)
 
 tunable_policy(`node_exporter_can_load_wifi_module',`
 	kernel_request_load_module(node_prometheusd_exporter_t) # Loads module net-pf-16-proto-16-family-nl80211. Probably used with --collector=wifi
