@@ -1,6 +1,6 @@
 # prometheus-selinux
 
-**This policy is designed to be a base to build upon.** 
+**This policy is designed to be a base to build upon.** Currently I would consider this in beta
 
 The main focus of this policy is:
 * To be run without docker
@@ -24,7 +24,7 @@ How-to add exporters:
 If you don't use the default port of 9100/tcp, you will need to label it with: node_prometheusd_exporter_port_t
 
 The following collectors for node_exporter are untested and partially implemented(see commented code in .te):
-* --collector.gmond --collector.megacli --collector.runit --collector.supervisord
+```--collector.gmond --collector.megacli --collector.runit --collector.supervisord```
 
 No doubt more permissions could be needed for the exisiting collectors that work, please keep an eye out for AVC denails.
 
@@ -38,18 +38,28 @@ The default mesh address does work but the actual mesh functionality is currentl
 # Clone the repo
 git clone https://github.com/georou/prometheus-selinux.git
 
+# Optional - Copy relevant .if interface file to /usr/share/selinux/devel/include to expose them when building and for future modules
+install -Dp -m 0664 -o root -g root prometheusd.if /usr/share/selinux/devel/include/myapplications/prometheusd.if
+
 # Compile the selinux module (see below)
 
 # Install the SELinux policy module. Compile it before hand to ensure proper compatibility (see below)
 semodule -i prometheusd.pp
 
+# Create required directories
+install -d -m 0750 -o prometheus -g prometheus /etc/{alertmanager,prometheus}
+
 # Restore all the correct context labels after creating the directories and setting owner,group permissions
 restorecon -RvF /etc/{alertmanager,prometheus}
+restorecon -RvF /etc/systemd/system/{alertmanager.service,prometheus.service,node-exporter.service}
 restorecon -RvF /opt/{alertmanager,prometheus}
 restorecon -RvF /usr/local/bin/{alertmanager,node_exporter,prometheus,promtool}
 
-# Start prometheusd
-systemctl start prometheus.service
+# Label alertmananger default port. Change if needed.
+semanage port -a -t alertmanager_prometheusd_port_t -p tcp 9093
+
+# Start prometheus stack
+systemctl start prometheus.service alertmanager.service node-exporter.service
 
 # Ensure it's working in the proper confinement
 ps -eZ | grep prometheus
