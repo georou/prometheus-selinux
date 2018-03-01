@@ -3,8 +3,8 @@ Description=Prometheus alertmanager
 After=network.target
 
 [Service]
-User=alertmanager
-Group=alertmanager
+User=prometheus
+Group=prometheus
 ExecStart=/usr/local/bin/alertmanager --config.file /etc/alertmanager/alertmanager.yml --storage.path /opt/alertmanager/data
 Restart=on-failure
 
