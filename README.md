@@ -1,6 +1,7 @@
 # prometheus-selinux
+![rpmbuildstatus](https://copr.fedorainfracloud.org/coprs/georou/Prometheus/package/prometheus/status_image/last_build.png)
 
-**This policy is designed to be a base to build upon.** Currently I would consider this in beta
+**This policy is designed to be a base to build upon.** Currently I would consider this close to finished. It has now been tested in production to be working as intended.
 
 The main focus of this policy is:
 * To be run without docker
@@ -17,7 +18,7 @@ How-to add exporters:
 * Name and create the interface template in the .te file. Eg: prometheus_exporter_template(namehere) This will create relevent labels from the .if file. If you need to create more for your exporter, you need to declare them in the .te file.
 * Create a local policy section (use node_exporter's as an example) for the new exporter in the .te file and add permissions as needed.
 
-*Included are service files that indicate where you will be storing logs and data by default. Remember to label your directory if you don't choose these defaults.*
+**Included are service files that indicate where you will be storing logs and data by default. Remember to label your directory if you don't choose these defaults.**
 
 
 ## node_exporter Information
@@ -39,7 +40,7 @@ The default mesh address does work but the actual mesh functionality is currentl
 git clone https://github.com/georou/prometheus-selinux.git
 
 # Optional - Copy relevant .if interface file to /usr/share/selinux/devel/include to expose them when building and for future modules
-install -Dp -m 0664 -o root -g root prometheusd.if /usr/share/selinux/devel/include/myapplications/prometheusd.if
+install -Dp -m 0644 -o root -g root prometheusd.if /usr/share/selinux/devel/include/myapplications/prometheusd.if
 
 # Compile the selinux module (see below)
 
