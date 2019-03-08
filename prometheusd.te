@@ -113,6 +113,7 @@ fs_getattr_tmpfs(node_prometheusd_exporter_t)
 fs_getattr_xattr_fs(node_prometheusd_exporter_t)
 
 init_dbus_chat(node_prometheusd_exporter_t)
+init_read_state(node_prometheusd_exporter_t)
 init_status(node_prometheusd_exporter_t)
 
 rpc_search_nfs_state_data(node_prometheusd_exporter_t)
